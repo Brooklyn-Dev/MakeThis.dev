@@ -7,25 +7,50 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Idea } from "@/types/idea";
 import { apiPath } from "@/lib/api";
+import { useRouter, useSearchParams } from "next/navigation";
+
+const PAGE_SIZE = 10;
 
 export default function IdeasPage() {
 	const { data: session } = useSession();
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	const page = parseInt(searchParams.get("page") || "1", 10);
 	const [ideas, setIdeas] = useState<Idea[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [numPages, setNumPages] = useState(1);
+	const [hasMore, setHasMore] = useState(false);
 
-	async function fetchIdeas() {
-		const res = await fetch(apiPath("/ideas"));
-		const data = await res.json();
-		setIdeas(data);
+	async function fetchIdeas(currentPage: number) {
+		setLoading(true);
+
+		const res = await fetch(apiPath(`/ideas?page=${currentPage}&limit=${PAGE_SIZE}`));
+		const { ideas, numPages } = await res.json();
+
+		setIdeas(ideas);
+		setNumPages(numPages);
+		setHasMore(numPages > currentPage);
 		setLoading(false);
 	}
 
 	useEffect(() => {
-		fetchIdeas();
-	}, []);
+		fetchIdeas(page);
+	}, [page]);
 
-	function removeIdea(id: string) {
-		setIdeas((prev) => prev.filter((idea) => idea.id != id));
+	async function handleDelete(id: string) {
+		const updatedIdeas = ideas.filter((idea) => idea.id !== id);
+		setIdeas(updatedIdeas);
+
+		if (updatedIdeas.length === 0 && page > 1) {
+			goToPage(page - 1);
+		} else {
+			fetchIdeas(page);
+		}
+	}
+
+	function goToPage(p: number) {
+		router.push(`?page=${p}`);
 	}
 
 	return (
@@ -49,11 +74,25 @@ export default function IdeasPage() {
 			) : ideas.length === 0 ? (
 				<p>No ideas posted yet.</p>
 			) : (
-				<div className="space-y-4">
-					{ideas.map((idea) => (
-						<ProjectIdeaCard key={idea.id} idea={idea} onDelete={removeIdea} />
-					))}
-				</div>
+				<>
+					<div className="space-y-4">
+						{ideas.map((idea) => (
+							<ProjectIdeaCard key={idea.id} idea={idea} onDelete={() => handleDelete(idea.id)} />
+						))}
+					</div>
+
+					<div className="flex justify-center items-center space-x-4 mt-6">
+						<Button disabled={page === 1} onClick={() => goToPage(page - 1)}>
+							Prev
+						</Button>
+						<span>
+							Page {page} of {numPages}
+						</span>
+						<Button disabled={!hasMore} onClick={() => goToPage(page + 1)}>
+							Next
+						</Button>
+					</div>
+				</>
 			)}
 		</div>
 	);

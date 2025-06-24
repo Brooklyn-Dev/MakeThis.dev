@@ -5,15 +5,15 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import IdeaFormClient from "../../IdeaFormClient";
 
-type Props = { params: { id: string } };
+type EditIdeaPageProps = { params: Promise<{ id: string }> };
 
-export default async function EditIdeaPage({ params }: Props) {
+export default async function EditIdeaPage(context: EditIdeaPageProps) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
 		redirect(apiPath("/auth/signin"));
 	}
 
-	const { id } = await params;
+	const { id } = await context.params;
 
 	const idea = await prisma.projectIdea.findUnique({
 		where: { id },

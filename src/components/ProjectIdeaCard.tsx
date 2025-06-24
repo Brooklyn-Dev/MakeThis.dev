@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Idea } from "@/types/idea";
 import { apiPath } from "@/lib/api";
 import { redirect } from "next/navigation";
+import { useState } from "react";
 
 type Props = {
 	idea: Idea;
@@ -15,10 +16,12 @@ type Props = {
 export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 	const { data: session } = useSession();
 	const isAuthor = session?.user?.email == idea.user.email;
+	const [deleting, setDeleting] = useState(false);
 
 	async function handleDelete() {
 		if (!confirm("Are you sure you want to delete this idea?")) return;
 
+		setDeleting(true);
 		const res = await fetch(apiPath(`/ideas/${idea.id}`), {
 			method: "DELETE",
 		});
@@ -29,6 +32,8 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 		} else {
 			toast.error("Failed to delete idea.");
 		}
+
+		setDeleting(false);
 	}
 
 	async function handleEdit(ideaId: string) {
@@ -57,7 +62,13 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 					</div>
 
 					<div className="flex gap--2 mt-3">
-						<Button className="cursor-pointer" size="sm" variant="destructive" onClick={handleDelete}>
+						<Button
+							disabled={deleting}
+							className="cursor-pointer"
+							size="sm"
+							variant="destructive"
+							onClick={handleDelete}
+						>
 							Delete
 						</Button>
 					</div>

@@ -62,8 +62,7 @@ export default function IdeaFormClient({
 				toast.success(`Idea ${isEditing ? "updated" : "submitted"}!`);
 				success = true;
 			} else {
-				const errorData = await res.json().catch(() => ({ message: "Unknown error" }));
-				toast.error(`Failed to ${isEditing ? "update" : "submit"} idea: ${errorData}`);
+				toast.error(`Failed to ${isEditing ? "update" : "submit"} idea.`);
 			}
 		} catch (err) {
 			console.error("Network or fetch error:", err);

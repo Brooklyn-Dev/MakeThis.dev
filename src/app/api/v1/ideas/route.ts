@@ -3,13 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+	const page = parseInt(req.nextUrl.searchParams.get("page") || "1", 10);
+	const limit = parseInt(req.nextUrl.searchParams.get("limit") || "1", 10);
+	const offset = (page - 1) * limit;
+
 	const ideas = await prisma.projectIdea.findMany({
 		include: { user: true },
 		orderBy: { createdAt: "desc" },
+		skip: offset,
+		take: limit,
 	});
 
-	return NextResponse.json(ideas);
+	const totalCount = await prisma.projectIdea.count();
+	const numPages = Math.ceil(totalCount / limit);
+
+	return NextResponse.json({ ideas, numPages });
 }
 
 export async function POST(req: NextRequest) {
