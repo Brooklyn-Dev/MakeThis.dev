@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 export default function IdeaFormClient() {
   const router = useRouter();
@@ -14,6 +15,17 @@ export default function IdeaFormClient() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (title.trim().length < 5) {
+      toast.error("Title must be at least 5 characters.");
+      return;
+    }
+
+    if (description.trim().length < 10) {
+      toast.error("Description must be at least 10 characters.");
+      return;
+    }
+
     setIsLoading(true);
 
     const res = await fetch("/api/ideas", {
@@ -24,8 +36,10 @@ export default function IdeaFormClient() {
 
     if (res.ok) {
       router.push("/ideas");
+      toast.success("Idea submitted!");
     } else {
-      alert("Failed to submit idea.");
+      const errorText = res.text();
+      toast.error(`Error: ${errorText}`);
     }
 
     setIsLoading(false);
