@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Idea } from "@/types/idea";
 import { apiPath } from "@/lib/api";
+import { redirect } from "next/navigation";
 
 type Props = {
 	idea: Idea;
@@ -30,6 +31,10 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 		}
 	}
 
+	async function handleEdit(ideaId: string) {
+		redirect(`/ideas/edit/${ideaId}`);
+	}
+
 	return (
 		<li key={idea.id} className="bg-white shadow-sm p-4 border rounded-xl list-none">
 			<h2 className="font-semibold text-lg">{idea.title}</h2>
@@ -39,10 +44,23 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 			</div>
 
 			{isAuthor && (
-				<div className="flex gap--2 mt-3">
-					<Button className="cursor-pointer" size="sm" variant="destructive" onClick={handleDelete}>
-						Delete
-					</Button>
+				<div className="flex justify-end gap-4">
+					<div className="flex gap--2 mt-3">
+						<Button
+							className="cursor-pointer"
+							size="sm"
+							variant="outline"
+							onClick={() => handleEdit(idea.id)}
+						>
+							Edit
+						</Button>
+					</div>
+
+					<div className="flex gap--2 mt-3">
+						<Button className="cursor-pointer" size="sm" variant="destructive" onClick={handleDelete}>
+							Delete
+						</Button>
+					</div>
 				</div>
 			)}
 		</li>
