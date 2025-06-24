@@ -16,6 +16,8 @@ export default function IdeaFormClient() {
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
+		if (isLoading) return;
+
 		if (title.trim().length < 5) {
 			toast.error("Title must be at least 5 characters.");
 			return;
@@ -46,17 +48,19 @@ export default function IdeaFormClient() {
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
-			<div>
-				<label className="block font-medium">Title</label>
-				<Input value={title} onChange={(e) => setTitle(e.target.value)} required />
-			</div>
-			<div>
-				<label className="block font-medium">Description</label>
-				<Textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} required />
-			</div>
-			<Button type="submit" disabled={isLoading}>
-				{isLoading ? "Submitting..." : "Submit Idea"}
-			</Button>
+			<fieldset disabled={isLoading} className="space-y-4">
+				<div>
+					<label className="block font-medium">Title</label>
+					<Input value={title} onChange={(e) => setTitle(e.target.value)} required />
+				</div>
+				<div>
+					<label className="block font-medium">Description</label>
+					<Textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} required />
+				</div>
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? "Submitting..." : "Submit Idea"}
+				</Button>
+			</fieldset>
 		</form>
 	);
 }

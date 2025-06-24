@@ -36,6 +36,17 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({ error: "User not found." }, { status: 404 });
 	}
 
+	const existing = await prisma.projectIdea.findFirst({
+		where: {
+			userEmail: dbUser.email,
+			title,
+		},
+	});
+
+	if (existing) {
+		return new NextResponse("You've already submitted an idea with the same title.", { status: 400 });
+	}
+
 	const idea = await prisma.projectIdea.create({
 		data: { title, description, userEmail: dbUser.email },
 	});
