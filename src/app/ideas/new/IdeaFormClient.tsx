@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { apiPath } from "@/lib/api";
 
 export default function IdeaFormClient() {
 	const router = useRouter();
@@ -30,7 +31,7 @@ export default function IdeaFormClient() {
 
 		setIsLoading(true);
 
-		const res = await fetch("/api/ideas", {
+		const res = await fetch(apiPath("/ideas"), {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ title, description }),
