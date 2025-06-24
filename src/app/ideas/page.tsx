@@ -1,19 +1,31 @@
+"use client";
+
+import ProjectIdeaCard from "@/components/ProjectIdeaCard";
 import { Button } from "@/components/ui/button";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { ProjectIdea, User } from "@prisma/client";
-import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Idea } from "@/types/idea";
 
-type IdeaWithUser = ProjectIdea & { user: User };
+export default function IdeasPage() {
+  const { data: session } = useSession();
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function IdeasPage() {
-  const session = await getServerSession(authOptions);
+  async function fetchIdeas() {
+    const res = await fetch("/api/ideas");
+    const data = await res.json();
+    setIdeas(data);
+    setLoading(false);
+  }
 
-  const ideas: IdeaWithUser[] = await prisma.projectIdea.findMany({
-    include: { user: true },
-    orderBy: { createdAt: "desc" },
-  });
+  useEffect(() => {
+    fetchIdeas();
+  }, []);
+
+  function removeIdea(id: string) {
+    setIdeas((prev) => prev.filter((idea) => idea.id != id));
+  }
 
   return (
     <div className="mx-auto p-6 max-w-3xl">
@@ -29,21 +41,19 @@ export default async function IdeasPage() {
             <Button>Sign in to post</Button>
           </Link>
         )}
-
-        {ideas.length === 0 && <p>No ideas posted yet.</p>}
       </div>
 
-      <div className="space-y-4">
-        {ideas.map((idea) => (
-          <li key={idea.id} className="bg-white shadow-sm p-4 border rounded-xl list-none">
-            <h2 className="font-semibold text-lg">{idea.title}</h2>
-            <p className="text-gray-600 text-sm">{idea.description}</p>
-            <div className="mt-2 text-gray-600 text-xs">
-              by {idea.user?.name || idea.user.email} - {new Date(idea.createdAt).toLocaleString()}
-            </div>
-          </li>
-        ))}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : ideas.length === 0 ? (
+        <p>No ideas posted yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {ideas.map((idea) => (
+            <ProjectIdeaCard key={idea.id} idea={idea} onDelete={removeIdea} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

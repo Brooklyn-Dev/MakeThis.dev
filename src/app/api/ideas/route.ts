@@ -3,6 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export async function GET() {
+  const ideas = await prisma.projectIdea.findMany({
+    include: { user: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return NextResponse.json(ideas);
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -30,16 +39,8 @@ export async function POST(req: NextRequest) {
   });
 
   const idea = await prisma.projectIdea.create({
-    data: { title, description, userId: dbUser.id },
+    data: { title, description, userEmail: dbUser.email },
   });
 
   return NextResponse.json(idea);
-}
-
-export async function GET() {
-  const ideas = await prisma.projectIdea.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-
-  return NextResponse.json(ideas);
 }
