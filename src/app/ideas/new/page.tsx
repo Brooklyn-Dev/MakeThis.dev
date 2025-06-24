@@ -25,8 +25,8 @@ export default function NewIdeaPage() {
 	}
 
 	return (
-		<div className="p-6 max-w-xl mx-auto">
-			<h1 className="text-2xl font-bold mb-4">Submit a New Idea</h1>
+		<div className="mx-auto p-6 max-w-xl">
+			<h1 className="mb-4 font-bold text-2xl">Submit a New Idea</h1>
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<div>
 					<label className="block font-medium">Title</label>
