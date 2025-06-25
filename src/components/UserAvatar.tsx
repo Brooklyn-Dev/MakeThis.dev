@@ -18,6 +18,7 @@ export default function UserAvatar({ user }: UserAvatarProps) {
 				alt={user.name || user.email || "User avatar"}
 				fill
 				className="rounded-full object-cover"
+				sizes="48px"
 			/>
 		</div>
 	) : (
