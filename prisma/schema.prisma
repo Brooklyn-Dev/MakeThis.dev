@@ -18,13 +18,16 @@ model User {
 }
 
 model ProjectIdea {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  createdAt   DateTime @default(now())
+  id               String   @id @default(cuid())
+  title            String
+  description      String
+  problemStatement String?
+  targetAudience   String?
+  keyChallenges    String?
+  createdAt        DateTime @default(now())
 
-  userEmail   String
-  user        User     @relation(fields: [userEmail], references: [email], name: "UserIdeas")
+  userEmail        String
+  user             User     @relation(fields: [userEmail], references: [email], name: "UserIdeas")
 
   upvotes Upvote[]
 }

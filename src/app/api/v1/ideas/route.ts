@@ -4,9 +4,6 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
-	const session = await getServerSession(authOptions);
-	const email = session?.user.email ?? null;
-
 	const page = parseInt(req.nextUrl.searchParams.get("page") || "1", 10);
 	const limit = parseInt(req.nextUrl.searchParams.get("limit") || "1", 10);
 	const offset = (page - 1) * limit;
@@ -15,11 +12,6 @@ export async function GET(req: NextRequest) {
 		include: {
 			user: true,
 			_count: { select: { upvotes: true } },
-			upvotes: email
-				? {
-						where: { userEmail: email },
-				  }
-				: false,
 		},
 		orderBy: { createdAt: "desc" },
 		skip: offset,
@@ -29,7 +21,7 @@ export async function GET(req: NextRequest) {
 	const response = ideas.map((idea) => ({
 		...idea,
 		upvoteCount: idea._count.upvotes,
-		hasUpvoted: idea.upvotes?.length > 0,
+		hasUpvoted: idea._count.upvotes > 0,
 	}));
 
 	const totalCount = await prisma.projectIdea.count();
@@ -44,7 +36,7 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 	}
 
-	const { title, description } = await req.json();
+	const { title, description, problemStatement, targetAudience, keyChallenges } = await req.json();
 
 	if (!title || title.trim().length < 5) {
 		return new NextResponse("Title must be at least 5 characters.", { status: 400 });
@@ -74,7 +66,7 @@ export async function POST(req: NextRequest) {
 	}
 
 	const idea = await prisma.projectIdea.create({
-		data: { title, description, userEmail: dbUser.email },
+		data: { title, description, problemStatement, targetAudience, keyChallenges, userEmail: dbUser.email },
 	});
 
 	return NextResponse.json(idea);

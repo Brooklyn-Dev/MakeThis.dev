@@ -2,6 +2,9 @@ export type Idea = {
 	id: string;
 	title: string;
 	description: string;
+	problemStatement: string;
+	targetAudience?: string;
+	keyChallenges?: string;
 	createdAt: string;
 	user: {
 		email: string;

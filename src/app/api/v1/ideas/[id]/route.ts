@@ -1,7 +1,29 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+	const { id } = await context.params;
+
+	const idea = await prisma.projectIdea.findUnique({
+		where: { id },
+		include: {
+			user: true,
+			_count: { select: { upvotes: true } },
+		},
+	});
+
+	if (!idea) {
+		return NextResponse.json({ message: "Idea not found " }, { status: 404 });
+	}
+
+	return NextResponse.json({
+		...idea,
+		upvoteCount: idea._count.upvotes,
+		hasUpvoted: idea._count.upvotes > 0,
+	});
+}
 
 export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
 	const session = await getServerSession(authOptions);
@@ -10,7 +32,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
 	}
 
 	const { id } = await context.params;
-	const { title, description } = await req.json();
+	const { title, description, problemStatement, targetAudience, keyChallenges } = await req.json();
 
 	if (!title || title.trim().length < 5) {
 		return NextResponse.json({ error: "Title must be at least 5 characters." }, { status: 400 });
@@ -27,7 +49,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
 
 	const updatedIdea = await prisma.projectIdea.update({
 		where: { id },
-		data: { title, description },
+		data: { title, description, problemStatement, targetAudience, keyChallenges },
 	});
 
 	return NextResponse.json(updatedIdea);

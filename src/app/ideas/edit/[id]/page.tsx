@@ -31,6 +31,9 @@ export default async function EditIdeaPage(context: EditIdeaPageProps) {
 			<IdeaFormClient
 				initialTitle={idea.title}
 				initialDescription={idea.description}
+				initialProblemStatement={idea.problemStatement}
+				initialTargetAudience={idea.targetAudience}
+				initialKeyChallenges={idea.keyChallenges}
 				ideaId={idea.id}
 				isEditing
 			/>
