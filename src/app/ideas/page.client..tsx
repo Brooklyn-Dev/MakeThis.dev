@@ -27,7 +27,7 @@ export default function IdeasPageClient() {
 		setLoading(true);
 
 		const res = await fetch(apiPath(`/ideas?page=${currentPage}&limit=${PAGE_SIZE}`));
-		const { ideas, numPages } = await res.json();
+		const { response: ideas, numPages } = await res.json();
 
 		setIdeas(ideas);
 		setNumPages(numPages);
@@ -64,7 +64,7 @@ export default function IdeasPageClient() {
 						<Button>New Idea</Button>
 					</Link>
 				) : (
-					<Link href={apiPath("/auth/signin?callbackUrl=/ideas/new")}>
+					<Link href={"api/auth/signin?callbackUrl=/ideas/new"}>
 						<Button>Sign in to post</Button>
 					</Link>
 				)}

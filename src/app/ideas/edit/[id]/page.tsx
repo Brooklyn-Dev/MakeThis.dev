@@ -4,13 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import IdeaFormClient from "../../IdeaFormClient";
+import { signIn } from "next-auth/react";
 
 type EditIdeaPageProps = { params: Promise<{ id: string }> };
 
 export default async function EditIdeaPage(context: EditIdeaPageProps) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
-		redirect(apiPath("/auth/signin"));
+		signIn(undefined, { callbackUrl: window.location.href });
+		return;
 	}
 
 	const { id } = await context.params;

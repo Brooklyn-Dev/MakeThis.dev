@@ -8,18 +8,35 @@ datasource db {
 }
 
 model User {
-  email String        @id
-  name  String?
-  image String?
-  ideas ProjectIdea[] @relation("UserIdeas")
+  email   String        @id
+  name    String?
+  image   String?
+
+  ideas   ProjectIdea[] @relation("UserIdeas")
+
+  upvotes Upvote[]
 }
 
 model ProjectIdea {
-  id          String @id  @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
   createdAt   DateTime @default(now())
 
   userEmail   String
   user        User     @relation(fields: [userEmail], references: [email], name: "UserIdeas")
+
+  upvotes Upvote[]
+}
+
+model Upvote {
+  id        String      @id @default(cuid())
+  userEmail String
+  ideaId    String
+  createdAt DateTime    @default(now())
+
+  user      User        @relation(fields: [userEmail], references: [email])
+  idea      ProjectIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@unique([userEmail, ideaId])
 }

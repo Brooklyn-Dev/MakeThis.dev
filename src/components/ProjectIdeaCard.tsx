@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Idea } from "@/types/idea";
@@ -16,7 +16,10 @@ type Props = {
 export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 	const { data: session } = useSession();
 	const isAuthor = session?.user?.email == idea.user.email;
+
 	const [deleting, setDeleting] = useState(false);
+	const [upvoteCount, setUpvoteCount] = useState(idea.upvoteCount ?? 0);
+	const [hasUpvoted, setHasUpvoted] = useState(idea.hasUpvoted ?? 0);
 
 	async function handleDelete() {
 		if (!confirm("Are you sure you want to delete this idea?")) return;
@@ -40,12 +43,43 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 		redirect(`/ideas/edit/${ideaId}`);
 	}
 
+	async function handleUpvote() {
+		if (!session) {
+			signIn(undefined, { callbackUrl: window.location.href });
+			return;
+		}
+
+		const res = await fetch(apiPath(`/ideas/${idea.id}/upvote`), { method: "PATCH" });
+
+		if (res.ok) {
+			const { upvoteCount } = await res.json();
+			setUpvoteCount(upvoteCount);
+			setHasUpvoted(!hasUpvoted);
+		} else {
+			toast.error("Failed to upvote.");
+		}
+	}
+
 	return (
 		<li key={idea.id} className="bg-white shadow-sm p-4 border rounded-xl list-none">
-			<h2 className="font-semibold text-lg">{idea.title}</h2>
-			<p className="text-gray-600 text-sm">{idea.description}</p>
-			<div className="mt-2 text-gray-600 text-xs">
-				by {idea.user?.name || idea.user.email} - {new Date(idea.createdAt).toLocaleString()}
+			<div className="flex items-start gap-4">
+				<Button
+					variant={hasUpvoted ? "default" : "outline"}
+					size="sm"
+					onClick={handleUpvote}
+					className="flex items-center gap-1"
+				>
+					<span>👍</span>
+					<span>{upvoteCount}</span>
+				</Button>
+
+				<div className="flex-1">
+					<h2 className="font-semibold text-lg">{idea.title}</h2>
+					<p className="text-gray-600 text-sm">{idea.description}</p>
+					<div className="mt-2 text-gray-600 text-xs">
+						by {idea.user?.name || idea.user.email} - {new Date(idea.createdAt).toLocaleString()}
+					</div>
+				</div>
 			</div>
 
 			{isAuthor && (
