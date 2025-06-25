@@ -1,18 +1,15 @@
-import { apiPath } from "@/lib/api";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import IdeaFormClient from "../../IdeaFormClient";
-import { signIn } from "next-auth/react";
 
 type EditIdeaPageProps = { params: Promise<{ id: string }> };
 
 export default async function EditIdeaPage(context: EditIdeaPageProps) {
 	const session = await getServerSession(authOptions);
 	if (!session) {
-		signIn(undefined, { callbackUrl: window.location.href });
-		return;
+		redirect("/api/auth/signin");
 	}
 
 	const { id } = await context.params;
@@ -22,7 +19,7 @@ export default async function EditIdeaPage(context: EditIdeaPageProps) {
 	});
 
 	if (!idea || idea.userEmail !== session.user.email) {
-		redirect(apiPath("/auth/ideas"));
+		redirect("api/auth/ideas");
 	}
 
 	return (
@@ -31,9 +28,9 @@ export default async function EditIdeaPage(context: EditIdeaPageProps) {
 			<IdeaFormClient
 				initialTitle={idea.title}
 				initialDescription={idea.description}
-				initialProblemStatement={idea.problemStatement}
-				initialTargetAudience={idea.targetAudience}
-				initialKeyChallenges={idea.keyChallenges}
+				initialProblemStatement={idea.problemStatement ?? undefined}
+				initialTargetAudience={idea.targetAudience ?? undefined}
+				initialKeyChallenges={idea.keyChallenges ?? undefined}
 				ideaId={idea.id}
 				isEditing
 			/>

@@ -1,13 +1,12 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import IdeaFormClient from "../IdeaFormClient";
-import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default async function NewIdeaPage() {
 	const session = await getServerSession(authOptions);
 	if (!session) {
-		signIn(undefined, { callbackUrl: window.location.href });
-		return;
+		redirect("/api/auth/signin");
 	}
 
 	return (

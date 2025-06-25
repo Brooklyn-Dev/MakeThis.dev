@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { apiPath } from "@/lib/api";
 import { Idea } from "@/types/idea";
+import { useRouter } from "next/navigation";
 
 export default function IdeaPageClient({ idea }: { idea: Idea }) {
 	const { data: session } = useSession();
+	const router = useRouter();
 	const [upvoteCount, setUpvoteCount] = useState(idea.upvoteCount ?? 0);
 	const [hasUpvoted, setHasUpvoted] = useState(idea.hasUpvoted ?? false);
+
+	useEffect(() => {
+		setUpvoteCount(idea.upvoteCount ?? 0);
+		setHasUpvoted(idea.hasUpvoted ?? false);
+	}, [idea.upvoteCount, idea.hasUpvoted]);
+
+	useEffect(() => {
+		router.refresh();
+	}, [router]);
 
 	async function handleUpvote() {
 		if (!session) {
@@ -23,6 +34,7 @@ export default function IdeaPageClient({ idea }: { idea: Idea }) {
 			const { upvoteCount } = await res.json();
 			setUpvoteCount(upvoteCount);
 			setHasUpvoted(!hasUpvoted);
+			router.refresh();
 		} else {
 			toast.error("Failed to upvote.");
 		}

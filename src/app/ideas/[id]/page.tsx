@@ -1,17 +1,21 @@
 import { apiPath } from "@/lib/api";
 import IdeaPageClient from "./page.client";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 
 type IdeaPageProps = { params: Promise<{ id: string }> };
 
 export default async function IdeaPage(context: IdeaPageProps) {
 	const { id } = await context.params;
 
-	const res = await fetch(apiPath(`/ideas/${id}`), { cache: "no-store" });
-	if (!res.ok) return null;
+	const requestHeaders = new Headers(await headers());
+	const cookies = requestHeaders.get("cookie");
+
+	const res = await fetch(apiPath(`/ideas/${id}`), { cache: "no-store", headers: { Cookie: cookies || "" } });
 	const idea = await res.json();
 
-	if (!idea) {
-		return <p>Idea not found.</p>;
+	if (!res.ok) {
+		return notFound();
 	}
 
 	return (

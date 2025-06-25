@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
+	const session = await getServerSession(authOptions);
+	const email = session?.user.email ?? null;
+
 	const page = parseInt(req.nextUrl.searchParams.get("page") || "1", 10);
 	const limit = parseInt(req.nextUrl.searchParams.get("limit") || "1", 10);
 	const offset = (page - 1) * limit;
@@ -12,6 +15,11 @@ export async function GET(req: NextRequest) {
 		include: {
 			user: true,
 			_count: { select: { upvotes: true } },
+			...(email && {
+				upvotes: {
+					where: { userEmail: email },
+				},
+			}),
 		},
 		orderBy: { createdAt: "desc" },
 		skip: offset,
@@ -21,7 +29,7 @@ export async function GET(req: NextRequest) {
 	const response = ideas.map((idea) => ({
 		...idea,
 		upvoteCount: idea._count.upvotes,
-		hasUpvoted: idea._count.upvotes > 0,
+		hasUpvoted: idea.upvotes?.length > 0,
 	}));
 
 	const totalCount = await prisma.projectIdea.count();

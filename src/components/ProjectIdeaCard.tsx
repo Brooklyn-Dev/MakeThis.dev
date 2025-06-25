@@ -52,7 +52,6 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 		}
 
 		const res = await fetch(apiPath(`/ideas/${idea.id}/upvote`), { method: "PATCH" });
-
 		if (res.ok) {
 			const { upvoteCount } = await res.json();
 			setUpvoteCount(upvoteCount);
@@ -75,7 +74,7 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 					<span>{upvoteCount}</span>
 				</Button>
 
-				<Link href={`ideas/${idea.id}`} className="block flex-1 cursor-pointer">
+				<Link href={`/ideas/${idea.id}`} className="block flex-1 cursor-pointer">
 					<h2 className="font-semibold text-lg">{idea.title}</h2>
 					<p className="text-gray-600 text-sm">{idea.description}</p>
 					<div className="mt-2 text-gray-600 text-xs">
