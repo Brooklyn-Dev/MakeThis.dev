@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MakeThis.dev
 
-## Getting Started
+![License](https://img.shields.io/badge/license-MIT-green)
+![GitHub issues](https://img.shields.io/github/issues/Brooklyn-Dev/MakeThis.dev)
 
-First, run the development server:
+A platform to share and discover dev-related project ideas.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Made as a submission to [The Bay](https://shipwrecked.hackclub.com/info/the-bay), an online, project-based, summer coding event by Hack Club.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![Screenshot](screenshot.jpg)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   Submit new project ideas with title, description, and optional details.
+-   Browse and paginate through existing posted ideas.
+-   Upvote ideas you like
+-   Profile pages to view project ideas posted by users
+-   Edit and delete your own posted ideas.
+-   User authentication and secure login using GitHub.
+-   Uses PostgreSQL (via Neon) for a reliable database.
+-   Built with Next.js, Prisma ORM, and deployed on Vercel.
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+-   Browse ideas on the website.
+-   Authentication (via Github) is required for:
+    -   Submitting, editing, deleting your own project ideas
+    -   Upvoting project ideas
+    -   Viewing your profile
 
--   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Potential Future Improvements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+-   Project tags & filtering.
+-   Project comments / discussion.
 
-## Deploy on Vercel
+## Like this project?
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If you find this project interesting or useful, consider giving it a star ⭐️!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
