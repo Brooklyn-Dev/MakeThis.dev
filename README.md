@@ -5,7 +5,11 @@
 
 A platform to share and discover dev-related project ideas.
 
-Made as a submission to [The Bay](https://shipwrecked.hackclub.com/info/the-bay), an online, project-based, summer coding event by Hack Club.
+<div>
+    <a href="https://shipwrecked.hackclub.com/?t=ghrm" target="_blank">
+        <img src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/739361f1d440b17fc9e2f74e49fc185d86cbec14_badge.png" alt="Shipwrecked badge" style="max-width: 250px;">
+    </a>
+</div>
 
 ![Screenshot](screenshot.jpg)
 
