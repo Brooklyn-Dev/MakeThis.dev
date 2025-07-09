@@ -76,7 +76,7 @@ export default function ProjectIdeaCard({ idea, onDelete }: Props) {
 
 				<Link href={`/ideas/${idea.id}`} className="block flex-1 cursor-pointer">
 					<h2 className="font-semibold text-lg">{idea.title}</h2>
-					<p className="text-gray-600 text-sm">{idea.description}</p>
+					<p className="text-gray-600 text-sm line-clamp-3">{idea.description}</p>
 					<div className="mt-2 text-gray-600 text-xs">
 						by {idea.user?.name || idea.user.email} - {new Date(idea.createdAt).toLocaleString()}
 					</div>
